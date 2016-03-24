@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load staticfiles %}
+
+{% block title_html %} {% endblock %}
+<h1> Group Page</h1>
+
+{% block page_title %} {{ video.video_title }} {% endblock %}
+
+{% block top_image %} 
+
+<div id="group_header" style="background-image:url('{{ MEDIA_URL }}{{ group.group_images }}'); background-size: auto 130%;">
+   <div class="group_title"><h1>{{ group.group_title }}</h1> </div>
+</div> 
+
+{% endblock %}
+
+{% block main_content %}
+
+
+    {{ user_status }}
+{% if group_hidden == 2 %} 
+    {% if user_status != 2 or user_status != 6 %}
+<h4> this group is private </h4>
+    {% endif %}
+{% else %}
+
+<div class="row">
+
+   
+    {% include "video/social-group-manager-column.html" %}
+
+    <div class="small-12 large-6 columns group_content">
+        <p>Group created by: <a href = "{% url 'video:user-profile' group.group_owner.id %}">{{ group.group_owner }}</a></p>
+
+        <h3>Group Members</h3>
+        {% if admins|length > 0 %}
+        {% for member in admins %}
+        <a href = "{% url 'video:user-profile' member.id %}">
+            <div class="block_item admin">
+                {% thumbnail member.userprofile.avatar "100x100" crop="center" as im %}
+                <img class="avatar admin" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                {% endthumbnail %}
+                <h5>{{ member.username }}</h5>
+            </div>
+        </a>    
+        {% endfor %}
+        {% endif %}
+
+        {% if members|length > 0 %}
+        {% for member in members %}
+        <a href = "{% url 'video:user-profile' member.id %}">
+            <div class="block_item ">
+                {% thumbnail member.userprofile.avatar "100x100" crop="center" as im %}
+                <img class="avatar" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                {% endthumbnail %}
+                <h5>{{ member.username }}</h5>
+            </div>
+        </a>    
+        
+           
+        {% endfor %}
+        {% endif %}        
+
+    </div>     
+
+
+
+
+
+    {% include "video/social-group-discussion-column.html" %}
+</div>
+
+{% endif %}
+
+
+
+
+
+
+
+{% endblock %}
+
+
+
+
+
+
+

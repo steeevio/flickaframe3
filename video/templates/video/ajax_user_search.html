@@ -1,0 +1,10 @@
+{% if users.count > 0 %}
+
+{% for user in users %}
+<li class="user-item-{{ user.id }}"><a onclick = "javascript:userInvite({{ user.id }}, 4)">{{ user.username }}</a></li>
+{% endfor %}
+
+{% else %}
+<li>None to show</li>
+
+{% endif %}

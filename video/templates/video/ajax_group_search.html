@@ -1,0 +1,10 @@
+{% if groups.count > 0 %}
+
+{% for group in groups %}
+<li class="group-item-{{ group.id }}"><a href="{% url 'video:social-group' group.id %}">{{ group.group_title }}</a></li>
+{% endfor %}
+
+{% else %}
+<li>None to show</li>
+
+{% endif %}

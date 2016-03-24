@@ -1,0 +1,68 @@
+<div  id="left_column" class="small-12 large-3 columns">
+        <div class="confirmation"></div>
+        <!-- only show button if 7 ie not yet any membership or 5 i.e the user rejected a previous invitation-->
+        {% if user.is_authenticated %}    
+
+        <p>
+            {{ user_status }}
+        1-3 show nothing
+        4- show invited - click to accept
+        5- show join button
+        6- no join button
+        7- show join button
+        </p>
+
+            {% if user_status == 5 %} 
+                <button class="join-button" onclick = "javascript:requestGroup( {{ user.id }}, {{ group.id }} ); ">Join Group</button>
+                <div class="invited"></div>
+            {% elif user_status == 4 %}    
+                <p>You have been invited to join this group click to accept</p>
+                <button onclick = "javascript:acceptDecline( {{ group.id }}, 2 ); ">Accept</button>
+                <div class="invited"></div>
+            {% elif user_status == 7 %}
+                 <a href="http://127.0.0.1:8000/video/create_user/"><button class="join-button" onclick = "javascript:message( login ); ">Join Group</button></a>
+            {% endif %}
+
+        {% else %} 
+                <p>You need to <a href="http://127.0.0.1:8000/video/connection/">login</a> or <a href="http://127.0.0.1:8000/video/create_user/">  register</a> in order to join a group </p>
+
+        {% endif %}
+
+        {% if user.is_authenticated and user_status = 6  %}
+       <h3>Managers Area</h3>
+       <h4>add users with the search</h4>
+        <input type="text" id="search" name="search">
+        <ul id="search-results">
+
+        </ul>
+            {% if requested|length > 0 %}
+        <h2>Requests to join group</h2>
+
+            {% for request in requested %}
+        <div class="membership-item-{{request.id}}">
+
+            <h3><a href = "http://127.0.0.1:8000/video/user_profile/{{ request.id }}">{{ request.username }}</a></h3>
+            <button onclick = "javascript:approveDecline( {{ request.id }}, 2 ); ">Accept</button>
+            <button onclick = "javascript:approveDecline( {{ request.id }}, 3 ); ">Reject</button>
+
+        </div>   
+            {% endfor %}
+            {% endif %}
+        {% endif %}   
+
+        <h2>Members in group</h2>
+        {% if members|length > 0 %}
+        
+        {% for member in members %}
+        <a href = "http://127.0.0.1:8000/video/user_profile/{{ member.id }}">
+            <div class="member_list">
+                <img class="avatar" src="/static/video/{% thumbnail member.userprofile.avatar 25x25 crop %}" >
+                <h5>{{ member.username }}</h5>
+            </div>
+        </a>    
+        
+           
+        {% endfor %}
+        {% endif %}
+ 
+    </div>

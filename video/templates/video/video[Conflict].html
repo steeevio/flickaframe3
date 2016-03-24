@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title_html %} {% endblock %}
+<h1> Video Page</h1>
+
+{% block page_title %} {{ video.video_title }} {% endblock %}
+
+{% block main_content %}
+<h1>because I can!</h1>
+
+{% if video.video_file %}
+
+<div id="user_id">{{ user.email }}</div>
+
+<div id="left-column">
+    <div id="video_container">
+       
+        <video id="my_video" controls width="100%" >
+            <source src="/static/video/{{video.video_file}}">
+        </video>
+        <div id="video_controls_bar"> 
+            <button id="playpausebutton">play</button>
+            <input id="seekslider" type="range" min="0" max="100" value="0" step="1" style="width:100%">
+            <button id="mutebtn">Mute</button>
+            <span id="curtimetext"></span>/<span id="durtimetext"></span>
+            
+           <!-- <button id="createtab">TAG IT</button> -->
+        </div>   
+        <div id="tag_tabs">
+            {% if tags|length > 0 %}
+            {% for tag in tags %}
+
+            <button id="tag_button_{{ tag.id }}" class="newtag" style="left:{{ tag.tag_start }}%;" onclick = "javascript:playFromLoaded({{ tag.tag_start }})">
+            {{ tag.tag_title }}
+            
+                
+            </button>
+            {% endfor %}
+          {% endif %}
+
+        </div> 
+          <!--  
+            <form>
+            Tag Title:<br>
+            <input type="text" name="tag_title" id="tag_title">
+            <textarea id="tag_description" rows="4" width="40%" ></textarea>
+            </form>
+            -->
+        
+    </div>
+</div>    
+
+
+<div id="right-column">
+    <div id="footnote"></div>
+    <div>    
+        <form action="create_tag/" method="POST" id="post_tag">
+            {% csrf_token %}
+          
+            <input type="text" name="tag_title" id="tag_title">
+            <textarea id="tag_description" rows="4" width="40%"></textarea>
+            <input type="submit" name="submit" value="Create">
+            <div id="results"></div> <!-- errors go here -->
+
+        </form>
+
+    </div>  
+
+    <div id="tags_on_load">
+        {% if tags|length > 0 %}
+        {% for tag in tags %}
+       
+         <div id="tag_{{ tag.id }}">
+            <div class="tag-left">
+                <img class="image_comments" src="  {{ tag.tag_image }}">
+            <div class="tag-time">{{ tag.tag_start_string }}</div>
+            <button onclick = "javascript:delete_tag( {{ tag.id }} ); ">Delete Tag</button>
+            </div>
+            <div class="tag-right">
+            <h3>{{ tag.tag_title }}</h3>
+            <p>{{ tag.tag_description }}<p>
+            
+            </div>    
+        </div>
+        
+        {% endfor %}
+        {% endif %}
+
+    </div>  
+   
+   <div>
+        <canvas ></canvas>
+        <div id="taglist"></div>
+        
+       
+      
+
+    </div>
+</div> 
+
+{% endif %}
+
+{% endblock %}
+
+
+
+
+
+
+

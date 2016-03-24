@@ -1,0 +1,10 @@
+{% if videos.count > 0 %}
+
+{% for video in videos %}
+<li class="video-item-{{ video.id }}"><a onclick = "javascript:addVideoToGroup({{ video.id }})">{{ video.video_title }}</a></li>
+{% endfor %}
+
+{% else %}
+<li>None to show</li>
+
+{% endif %}

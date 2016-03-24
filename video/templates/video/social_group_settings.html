@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load staticfiles %}
+
+{% block title_html %} {% endblock %}
+<h1> Group Page</h1>
+
+{% block page_title %} {{ video.video_title }} {% endblock %}
+
+{% block top_image %} 
+
+<div id="group_header" style="background-image:url('{{ MEDIA_URL }}{{ group.group_images }}'); background-size: auto 130%;">
+   <div class="group_title"><h1>{{ group.group_title }}</h1> </div>
+</div> 
+
+{% endblock %}
+
+{% block main_content %}
+
+
+    {{ user_status }}
+{% if group_hidden == 2 %} 
+    {% if user_status != 2 or user_status != 6 %}
+<h4> this group is private </h4>
+    {% endif %}
+{% else %}
+
+<div class="row">
+
+   
+    {% include "video/social-group-manager-column.html" %}
+
+    <div class="small-12 large-6 columns group_content">
+        <p>Group created by: <a href = "{% url 'video:user-profile' group.group_owner.id %}">{{ group.group_owner }}</a></p>
+
+
+                {% if user.userprofile.user_status == 2 %}
+        <h3>Group settings</h3>
+        <div class="group_settings">    
+            <form action="{% url 'video:social-group' group.id %}" method="post">
+
+                <h4>Do you want to moderate tags?</h4>
+                {% for radio in form.group_moderation %}
+                
+                <div class="switch round radio">
+                    {{ radio }}
+                    <label for="{{ radio.id_for_label }}">
+                        <span class="switch-on">ON</span>
+                        <span class="switch-off">OFF</span>
+                    </label>
+                </div>
+                {% endfor %}
+
+                <h4>Set Group Access</h4>
+                {% for radio in form.group_access %}
+                
+                <div class="switch round radio">
+                    {{ radio }}
+                    <label for="{{ radio.id_for_label }}">
+                        <span class="switch-on">ON</span>
+                        <span class="switch-off">OFF</span>
+                    </label>
+                </div>
+                {% endfor %}
+                <h4>Set Group Privacy</h4>
+                {% for radio in form.group_privacy %}
+               
+                <div class="switch round radio">
+                    {{ radio }}
+                    <label for="{{ radio.id_for_label }}">
+                        <span class="switch-on">ON</span>
+                        <span class="switch-off">OFF</span>
+                    </label>
+                </div>
+                {% endfor %}
+                <h4>Who can tag?</h4>
+                {% for radio in form.group_taggers %}
+                
+                <div class="switch round radio">
+                    {{ radio }}
+                    <label for="{{ radio.id_for_label }}">
+                        <span class="switch-on">ON</span>
+                        <span class="switch-off">OFF</span>
+                    </label>
+                </div>
+                {% endfor %}
+                <h4>Hide group from non members</h4>
+                {% for radio in form.group_hidden %}
+                
+                <div class="switch round radio">
+                    {{ radio }}
+                    <label for="{{ radio.id_for_label }}">
+                        <span class="switch-on">ON</span>
+                        <span class="switch-off">OFF</span>
+                    </label>
+                </div>
+                {% endfor %}
+
+                <h4>Who can draw tags</h4>
+                {% for radio in form.group_drawing %}
+                
+                <div class="switch round radio">
+                    {{ radio }}
+                    <label for="{{ radio.id_for_label }}">
+                        <span class="switch-on">ON</span>
+                        <span class="switch-off">OFF</span>
+                    </label>
+                </div>
+                {% endfor %}        
+
+                {{ form.group_title }}
+                {{ form.group_description }}
+                <input type="submit" name="submit" value="Update Settings">
+            </div>
+            
+        </form>
+            {% else %}
+        <h5 class="section_title"> You need to go pro to change the manager settings</h5>
+            {% endif %}        
+
+    </div>     
+
+
+
+
+
+    {% include "video/social-group-discussion-column.html" %}
+</div>
+
+{% endif %}
+
+
+
+
+
+
+
+{% endblock %}
+
+
+
+
+
+
+

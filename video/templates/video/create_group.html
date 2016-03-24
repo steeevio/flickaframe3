@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block page_title %}  {% endblock %}
+
+{% block main_content %}
+<h1> Create Group</h1>
+<form action="{% url 'video:create-group' %}" method="post" enctype="multipart/form-data">
+{% csrf_token %}
+{{ form.group_title }}
+{{ form.group_description }}
+{{ form.group_images }}
+{% if video.video_title %}
+	<h3>Including Video:</h3>{{ video.video_title }}
+
+{% endif %}
+
+
+<input style = "display:none" id="id_add_video" type="number" value="{{ video.id }}" name="add_video">
+<input type="submit" name="submit" value="Create">
+
+
+</form>
+
+<div>
+	 <img id="img_id" src="#" alt="your image" />
+</div>
+
+{% endblock %}

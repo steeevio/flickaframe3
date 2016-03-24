@@ -1,0 +1,26 @@
+<html>
+	<head>
+	{% load staticfiles %}	
+		<title>
+		{% block title_html %} {% endblock %}
+		</title>
+		<script src= {% static "video/js/jquery-1.11.2.js" %}> </script>
+		<script src = {% static "video/js/popcorn.min.js" %}> </script>
+		<link rel="stylesheet" type="text/css" href={% static "video/css/style.css" %}>
+
+	</head>
+
+	<body>
+		<nav><a href="http://127.0.0.1:8000/video/">Home</a><nav><a href="http://127.0.0.1:8000/video/upload/">upload</a><nav><a href="http://127.0.0.1:8000/video/connection/">login</a><nav><a href="http://127.0.0.1:8000/video/create_user">signup</a> <a href="http://127.0.0.1:8000/video/logout">logout</a>  </nav>
+		<h1>
+		{% block page_title %} {% endblock %}
+		</h1>
+
+		<div id="container">
+		{% block main_content %} {% endblock %}	
+		</div>	
+
+		<script src = {% static "video/js/video.js" %}> </script>
+	</body>
+
+</html>

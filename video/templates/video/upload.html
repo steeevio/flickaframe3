@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title_html %} {% endblock %}
+{% load staticfiles %}
+
+{% block page_title %} 
+{% endblock %}
+
+{% block main_content %}
+<script src=" {% static "video/js/jquery-1.11.2.js" %}" type="text/javascript"></script>
+<script type="text/javascript" src="{% static "video/js/video_generic.js" %}"></script>
+
+<h1>Upload Page</h1>
+{% if user.is_authenticated %}
+<form action="{% url 'video:upload' %}" method="post" enctype="multipart/form-data">
+{% csrf_token %}
+	<h4>Video Title</h4>
+	{{ form.video_title }}
+	<h4>Video description</h4>
+	{{ form.video_description }}
+	<h4>Select an option</h4>
+	<a onclick = "javascript:showHide( '#youtube_upload', '#file_upload');"><div id="youtube_button" ><h5>Youtube</h5></div></a>
+	<a onclick = "javascript:showHide( '#file_upload', '#youtube_upload');"><div id="upload_button"><h5>Upload File</h5></div></a>
+	<div style="display:none" id="youtube_upload">
+	<h4>YouTube Url</h4>
+	{{ form.youtube_id }}
+	</div>
+	<div style="display:none" id="file_upload">
+	<h4>Upload File</h4>
+	{{ form.video_file }}	
+	<h4>Select a time for poster image</h4>
+	{{ form.poster_time }}
+	</div>
+	{% if user.userprofile.user_status == 2 %}
+	<div id="video_privacy">
+	<h4>Set Video to Private</h4>
+	{{ form.private }}
+	</div>
+	{% endif %}
+
+<input type="submit" name="submit" value="Create">
+
+</form>
+
+{% else %}
+<h2>You need to login or register to upload videos.<a href="{% url 'video:create' %}">click here to sign up</a></h2>
+
+{% endif %}
+
+
+
+{% endblock %}

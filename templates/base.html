@@ -1,0 +1,98 @@
+<!doctype html>
+<html  lang="en">
+	<head>
+		<meta charset="utf-8" />
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	{% load static from staticfiles %}	
+
+		<title>
+		{% block title_html %} {% endblock %}
+		</title>
+		<script>
+    		var static_url = "{% static '' %}";
+    		var media_url = "{{ MEDIA_URL }}";
+		</script>
+
+		<!--<script src={% static "video/js/popcorn-complete.js" %}></script>-->
+		<link rel="stylesheet" type="text/css" href={% static "video/css/style.css" %}>
+		<link rel="stylesheet" type="text/css" href={% static "video/foundation/project_name/css/app.css" %}>
+
+	</head>
+
+	<body>
+		<nav class="top-bar" data-topbar role="navigation">
+			 <ul class="title-area">
+    			<li class="name">
+					<h1><a href="/video/"><img id="nav_logo" src={% static "video/img/logo.png" %}></a></h1>
+    			</li>
+     <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+    			<li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+			</ul>
+			<section class="top-bar-section">
+				<ul class="right">
+					<li><a href="/video/">Home</a></li>
+					<li><a href="/video/upload/">upload</a></li>
+
+					{% if user.is_authenticated %}
+					<li><a href="/video/user_profile/{{ user.id }}">{{ user.username }}</a></li>
+					<li><a href="/video/logout/">logout</a> </li>
+					{% else %}
+					<li><a href="/video/connection/">login</a></li>
+					<li><a href="/video/create_user/">signup</a> </li>
+					{% endif %}
+
+					<li><a href="/video/create_group">Create Group</a> </li>
+					
+
+				</ul>	
+			</section>
+		</nav>
+
+		
+		<h1>
+		{% block page_title %} {% endblock %}
+		</h1>
+		{% block top_image %} {% endblock %}	
+		<div id="container">
+
+		<!-- Content is the Block for search - haystack view -->	
+		{% block content %} {% endblock %}		
+
+		<!-- General content-->
+		{% block main_content %} {% endblock %}	
+		</div>	
+
+		<script src= {% static "video/js/jquery-1.11.2.js" %}> </script>
+		<script language="javascript" src= {% static "video/js/sketch.js" %}> </script>
+		<script src= {% static "video/foundation/project_name/bower_components/foundation/js/foundation.js" %}> </script>
+
+		<!--<script src= {% static "video/foundation/project_name/bower_components/jquery/dist/jquery.min.js" %}></script>-->
+    	<script src= {% static "video/foundation/project_name/bower_components/foundation/js/foundation.min.js" %}></script>
+    	<!--<script src= {% static "video/foundation/project_name/bower_components/foundation/js/foundation/foundation.dropdown.js" %}> </script>-->
+    	<script src= {% static "video/foundation/project_name/js/app.js" %}></script>
+    	<!--<script src="js/foundation/foundation.dropdown.js"></script>-->
+
+    
+	    <script>
+	        $(document).foundation();
+	    </script>
+	   <script type="text/javascript" src="{% static "video/js/video_generic.js" %}"></script>
+		{% if video.video_file %}
+
+
+
+
+		<script language="javascript" src= "{% static "video/js/vid_uploaded2.js" %}"> </script>
+
+		<script>{{ script }}</script>
+
+		{% endif %}
+		{% if video.youtube_id %}
+		<script src="https://www.youtube.com/iframe_api"></script>
+		<script language="javascript" src= "{% static "video/js/video_youtube_no_popcorn.js" %}"> </script>
+
+		{% endif %}
+
+		</body>
+
+</html>

@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load staticfiles %}
+{% block title_html %} {% endblock %}
+
+
+{% block page_title %} {{ video.video_title }} {% endblock %}
+
+
+
+{% block main_content %}
+<script src=" {% static "video/js/jquery-1.11.2.js" %}" type="text/javascript"></script>
+<script type="text/javascript" src="{% static "video/js/video_generic.js" %}"></script>
+
+
+{% if user_profile.email %}
+{{ test_profile_user }}
+{{ test_current_user }}
+
+<div class="row">
+    {% include "video/user_profile_left_column.html" %}
+   
+    <div id="right_column" class="small-12 large-9 columns user_content">
+        <h2 class="section-title">User Profile</h2>
+
+        <div id="video_list">
+            <h2>Members Videos</h2>
+            {% if videos|length > 0 %}
+            {% for video in videos %}
+            <a href="{% url 'video:video' video.id %}">
+            <div class="block_item" id="video{{ video.id }}">
+           
+                {% if video.youtube_id %}
+                <img src="http://img.youtube.com/vi/{{ video.youtube_id }}/0.jpg">
+                {% else %}
+                {% thumbnail video.poster "600x400" crop="center" as im %}
+                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                {% endthumbnail %}
+
+
+
+                {% endif %}
+                <h3>{{ video.video_title }}</h3>
+                
+                <p>Tags:{{ video.tag_set.count }}</p>
+            
+            </div>  
+            </a>     
+            {% endfor %}
+            {% endif %}
+        </div>
+
+         <h2 class="section_title">Groups member is in</h2>
+                {% if groups|length > 0 %}
+                {% for group in groups %}
+                <div class="block_item" id="group_{{ group.id }}">
+                    <p><a href = "{% url 'video:social-group' group.id %}">{{ group.group_title }}</a></p>
+                </div>   
+                {% endfor %}
+                {% endif %} 
+
+
+         <h2 class="section_title">Tags member has created</h2>
+                {% if tags|length > 0 %}
+                {% for tag in tags %}
+                <a href="{% url 'video:video-time' tag.video.id tag.time_secs %}">
+                       
+                    <div class="block_item">
+
+                        {% if tag.tag_image %}
+                        {% thumbnail tag.tag_image "600x400" crop="center" as im %}
+                        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                        {% endthumbnail %}
+                        {% endif %}
+
+                        <h3>{{ tag.tag_title }}</h3>
+                    </div>
+                </a>  
+                   
+                {% endfor %}
+                {% endif %} 
+
+        <h2 class="section_title">Collections</h2>
+                {% for collection in collections %}
+                <div class="" id="collection{{ collection.id }}">   
+                    <h3 class="section_title">{{ collection.collection_name }}</h3>
+                    {% for tag in collection.collection_tags.all %}
+                    <a href="{% url 'video:video-time' tag.video.id tag.time_secs %}">
+                       
+                      <div class="block_item">
+
+                            {% if tag.tag_image %}
+                            {% thumbnail tag.tag_image "600x400" crop="center" as im %}
+                            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                            {% endthumbnail %}
+                            {% endif %}
+
+                            <h3>{{ tag.tag_title }}</h3>
+                        </div>
+                    </a>   
+                    {% endfor %}
+                </div>        
+                {% endfor %}
+
+        <h2 class="section_title">Slides member has added</h2>
+                {% for slide in slides %}
+                <div class="block_item" id="slide_{{ slide.id }}">
+                {% thumbnail slide.slide_image "300x200" crop="center" as im %}
+                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                {% endthumbnail %}
+                    <h3>{{ slide.slide_name }}</h3>
+                </div>        
+                {% endfor %}
+
+        </div>  
+              
+    </div>    
+
+
+</div>    
+{% endif %}
+
+<!--<script type="text/javascript" src="/~mnb2/a3/admin/jsi18n/"></script>-->
+
+
+
+
+
+
+{% endblock %}
+
+
+
+
+
+
+

@@ -1,0 +1,3 @@
+{{ object.group_title }}
+{{ object.user.username }}
+{{ object.group_description }}

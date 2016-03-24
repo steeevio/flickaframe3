@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load staticfiles %}
+{% block title_html %} {% endblock %}
+
+
+{% block page_title %} {{ video.video_title }} {% endblock %}
+
+
+
+{% block main_content %}
+<script src=" {% static "video/js/jquery-1.11.2.js" %}" type="text/javascript"></script>
+<script type="text/javascript" src="{% static "video/js/video_generic.js" %}"></script>
+
+
+{% if user_profile.email %}
+{{ test_profile_user }}
+{{ test_current_user }}
+
+<div class="row">
+    {% include "video/user_profile_left_column.html" %}
+   
+    <div id="right_column" class="small-12 large-9 columns user_content">
+
+        {% if this_user = True %}
+
+        <h1>Create a collection</h1>
+
+        <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+            <table>
+
+
+            {{ form.collection_name }}
+            {{ form.collection_description }}
+            
+            {% if tag.tag_title %}
+                <h3>Including Tag:</h3>{{ tag.tag_title }}
+
+            {% endif %}
+
+            <input style = "display:none" id="id_collection_tag" type="number" value="{{ tag.id }}" name="collection_tag">
+    
+            </table>
+
+                <input type="submit" name="submit" value="Create">
+
+        </form>
+        {% endif %}
+
+        {% for collection in collections %}
+        <div class="" id="collection_{{ collection.id }}">
+           
+            <h3 class="section_title">{{ collection.collection_name }}</h3>
+            {% for tag in collection.collection_tags.all|slice:":4" %}
+            
+            <a href="{% url 'video:video-time' tag.video.id tag.time_secs %}">
+           
+            <div class="block_item">
+
+                {% if tag.tag_image %}
+                {% thumbnail tag.tag_image "600x400" crop="center" as im %}
+                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                {% endthumbnail %}
+                {% endif %}
+
+                <h5>{{ tag.tag_title }}</h5>
+            </div>
+
+        </a>   
+
+
+            {% endfor %}
+
+
+        </div>    
+        {% endfor %}
+
+    </div> 
+
+
+
+</div>    
+{% endif %}
+
+<!--<script type="text/javascript" src="/~mnb2/a3/admin/jsi18n/"></script>-->
+
+
+
+
+
+
+{% endblock %}
+
+
+
+
+
+
+

@@ -1,0 +1,55 @@
+{% load thumbnail %}
+
+
+    <div  id="" class="small-12 large-3 columns">
+        <div class="row">
+            <div id="left_column_top" class="small-12 large-12 columns">
+            </div>
+        </div>   
+        <div class="row"> 
+            <div  id="left_column" class="small-12 large-12 columns">
+                <a href="{% url 'video:user-profile' user.id %}">
+                    
+                    {% thumbnail user_profile.userprofile.avatar "150x150" crop="center" as im %}
+                    <img class="profile user_avatar" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    {% endthumbnail %}
+                    <h3>{{ user_profile.username }}</h3>
+                </a>
+                <div class = "sub_menu">
+                    <ul class="">
+                        <a href="{% url 'video:user-profile-groups' user.id %}"><li>Groups</li></a>
+                        <a href="{% url 'video:user-profile-videos' user.id %}"><li>Videos</li></a>
+                        <a href="{% url 'video:user-profile-tags' user.id %}"><li>Tags</li></a>
+                        <a href="{% url 'video:user-profile-collections' user.id %}"><li>Collection</li></a>
+                        <a href="{% url 'video:user-profile-slides' user.id %}"><li>Slides</li></a>
+
+                    </ul>   
+                </div>
+
+                <div class = "managers_area">
+                    <div class="confirmation"></div>
+                    {% if user.is_authenticated and this_user == True %}
+                    <h4>Managers area</h4>
+
+                    <h5>Find groups to join</h5>
+                    <input type="text" id="search-groups" name="search">
+                    <ul id="search-groups-results">
+
+                    </ul>
+                    {% for group in group_invites %}
+
+
+
+
+                    <div class="membership-item-{{group.id}}">
+                        <h4><a href = "{% url 'video:social-group' group.id %} ">{{ group.group_title }}</a></h4>
+                        <button onclick = "javascript:acceptDecline( {{ group.id }}, 2 ); ">Accept</button>
+                        <button onclick = "javascript:acceptDecline( {{ group.id }}, 5 ); ">Reject</button>
+                    </div>   
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>    
+        </div>    
+
+    </div> 

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+
+{% block page_title %}  {% endblock %}
+
+{% block main_content %}
+<h1> Create user</h1>
+<form action="{% url 'video:create' %}" method="post" enctype="multipart/form-data" >
+{% csrf_token %}
+<table>
+	{{ form.as_table }}
+
+		
+</table>
+
+<input type="submit" name="submit" value="Create">
+
+</form>
+
+<a href="{% url 'social:begin' 'twitter' %}?next={{ request.path }}">Login with Twitter</a>
+<a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">Login with Facebook</a>
+<a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">Login with Google</a>
+
+
+<P>Already a member? login <a href="{% url 'video:public-connection' %}">here</a></p>
+
+{% endblock %}

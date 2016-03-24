@@ -1,0 +1,26 @@
+<html>
+	<head>
+		<title>
+		{% block title_html %} {% endblock %}
+		</title>
+		<script src="js/foundation/foundation.dropdown.js"></script>
+		<script src="/static/js/jquery-1.11.2.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="/static/style.css">
+	</head>
+
+	<body>
+		<h1>
+		{% block page_title %} {% endblock %}
+		</h1>
+
+		<div>
+		{% main_content %} {% endblock %}	
+		</div>	
+
+
+		<script src="/static/js/jquery-1.11.2.js"></script>
+		<script> $(document).foundation(); </script>
+	</body>
+
+</html>

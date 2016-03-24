@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load staticfiles %}
+
+{% block title_html %} {% endblock %}
+<h1> Group Page</h1>
+
+{% block page_title %} {{ video.video_title }} {% endblock %}
+
+{% block top_image %} 
+
+<div id="group_header" style="background-image:url('{{ MEDIA_URL }}{{ group.group_images }}'); background-size: auto 130%;">
+   <div class="group_title"><h1>{{ group.group_title }}</h1> </div>
+</div> 
+
+{% endblock %}
+
+{% block main_content %}
+<script src=" {% static "video/js/jquery-1.11.2.js" %}" type="text/javascript"></script>
+<script type="text/javascript" src="{% static "video/js/video_generic.js" %}"></script>
+
+ 
+<div class="row">
+   
+    {% include "video/social-group-manager-column.html" %}
+
+    <div class="small-12 large-9 columns group_content">
+        {% for slide in user_slides %}
+        {% thumbnail slide.slide_image "100x100" crop="center" as im %}
+        <img class = "slide_{{ slide.id }}" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" onclick = "javascript:slideToGroup( {{ slide.id }}, {{ group.id }} ); ">
+        {% endthumbnail %}
+        {% endfor %}    
+        <h1> Upload Page</h1>
+        <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+            <table>
+             {{ form.as_table }}
+
+    
+            </table>
+
+                <input type="submit" name="submit" value="Create">
+
+        </form>
+        <div id="slide_list">
+        {% for slide in slides %}
+            <div class="block_item " id="slide_{{ slide.id }}">
+                {% thumbnail slide.slide_image "300x200" crop="center" as im %}
+                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                {% endthumbnail %}
+                <h3>{{ slide.slide_name }}</h3>
+                    {# {% if slide.user.id == user.id %} #}
+                    <button onclick = "javascript:delete_slide( {{ slide.id }} ); ">Delete Slide</button>
+                    {# {% endif %} #}
+            </div>    
+        {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
+
+
+
+
+

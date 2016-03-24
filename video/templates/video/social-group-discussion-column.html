@@ -1,0 +1,70 @@
+{% load thumbnail %}
+
+<div  id="right_column" class="small-12 large-3 columns">
+    <h2>Group Discussion</h2>
+ <!-- comments section -->
+ {% if user_status == 2 or user_status == 6 %}
+    <div id="comment_form">
+ 
+
+        <input type="text" name="comment_entry" id="comment_entry" placeholder="Add your comment">
+        <!-- below - 0 because there is no parent comment / 3 because we on a group -->
+        <button class="tiny" onclick = "javascript:makeComment( 0, 3 );">Comment</button>
+        
+    </div>
+ {% endif %}   
+
+    <div id="comments">
+        
+        {% for comment in comments %}
+        <div class="comment_group">
+            {% if comment.comment_video %}
+            <h5><a href ="{% url 'video:video-group' comment.comment_video.id group.id  %}">Comment on a video: {{ comment.comment_video.video_title }}</a></h5>
+            {% endif %}
+            <div class="comment_outer ">
+                {% if user_status == 2 or user_status == 6 %}
+                <button class="tiny right" onclick = "javascript:displayCommentReply( {{ comment.id }} );">Reply</button>
+                {% endif %}
+                <!--<div class="comment_{{ comment.id }}">{{ comment_id }}</div>-->
+                <div class="comment_avatar">
+                    {% thumbnail comment.commenter.userprofile.avatar "50x50" crop="center" as im %}
+                    <img class="user_avatar" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    {% endthumbnail %}
+                </div>
+                <h4>{{ comment.message }}</h4>
+                <h6>{{ comment.commenter.username }}, {{ comment.added }}</h6>
+                
+                <div id="comment_replies_{{ comment.id }}"></div>
+            </div>
+            {% if user_status == 2 or user_status == 6 %}
+            <div  style="display:none" id="comment_form_{{ comment.id }}">
+            {% csrf_token %}    
+                <input type="text" name="comment_entry" id="comment_entry_{{ comment.id }}" placeholder="Add your reply">
+                <!-- below - id because there is a parent comment / 4 because we on a tag -->
+                <button class="tiny" onclick = "javascript:makeComment( {{ comment.id }}, 4 );">Reply</button>     
+            </div>
+            {% endif %}
+            {% for reply in comment.parent_comments.all %}
+            <div class="comment_outer comment_reply comment_reply_{{ comment.id }}">
+           <!--     <div class="comment_{{ comment.id }}">{{ comment.id }}</div>-->
+                <div class="comment_avatar">
+                    {% thumbnail reply.commenter.userprofile.avatar "40x40" crop="center" as im %}
+                    <img class="user_avatar" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    {% endthumbnail %}
+                </div>
+                <h5>{{ reply.message }}</h5>
+                <h6>{{ reply.commenter.username }}, {{ reply.added }}</h6>
+                <!--<button onclick = "javascript:displayCommentReply( {{ comment.id }} );">Reply</button>
+                <div id="comment_replies_{{ comment.id }}"></div>-->
+            </div>
+            {% endfor %}
+        </div>    
+
+
+        {% endfor %}
+        
+    </div>
+    <!-- end comments section -->   
+    
+
+</div>

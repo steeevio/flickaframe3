@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block page_title %}  {% endblock %}
+
+{% block main_content %}
+
+<h1> Index Page</h1>
+<h2> Last 10 videos</h2>
+<ul>
+{% for vid in video_list %}
+
+<li><a href="{% url 'video:video' vid.id %}">{{ vid.video_title }}</a></li>
+
+{% endfor %}
+</ul>
+
+<h2>Latest 10 groups</h2>
+<ul>
+{% for group in group_list %}
+<li><a href="{% url 'video:social-group' group.id %}">{{ group.group_title}}</a></li>
+{% endfor %}
+</ul>
+<h2>10 users</h2>
+<ul>
+{% for user in user_list %}
+<li><a href="{% url 'video:user-profile' user.id %}">{{ user.username }}</a></li>
+</ul>
+{% endfor %}
+
+{% endblock %}

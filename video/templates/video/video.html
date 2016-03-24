@@ -1,0 +1,444 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load staticfiles %}
+{% block title_html %} {% endblock %}
+
+{% block page_title %} 
+
+
+
+
+{% endblock %}
+
+{% block main_content %}
+
+<!--load popcorn depending if youtube or upload -->
+
+
+{% if video.video_title %}
+<!--hidden data for when arriving from a url to specific time - i think...-->
+<input type="hidden" value="{{ tag_time }}" name="start_time_secs">
+<!--not using this just yet-->
+<input type="hidden" value="{{ user.id }}" name="current_user">
+
+<div id="left-column">
+    <div id="video_outer">
+        <div id="video_container">
+             
+            <div id="overlay_vid"></div>  
+            <canvas id="blank"></canvas>
+            <canvas id="video_canvas"></canvas>
+            {% if video.video_file %}
+            <video crossOrigin="anonymous" preload="auto" id="my_video"  width="100%"  poster="{{ MEDIA_URL }}{{ video.poster }}">
+                <source src="{{ MEDIA_URL }}{{ video.video_file }}">
+            </video>
+            {% endif %}
+            {% if video.youtube_id %}
+            <div id="youtube_id" style="display:none">{{ video.youtube_id }}</div>
+            <div id="video-placeholder"></div>
+            {% endif %}
+        </div>
+
+        <div id="video_controls_bar"> 
+            <button id="playpausebutton" class="vid_button"><img src="{% static "video/img/play.png" %}"/></button>
+            <button id="mutebtn" class="vid_button"><img src="{% static "video/img/unmute.png" %}"/></button>
+                
+            <a id="draw" class="vid_button" href="#video_canvas" data-tool="marker"><img src="{% static "video/img/draw.png" %}"/></a>
+            <a id="eraser_button" class="vid_button" data-tool="eraser" data-clear="true" href="#video_canvas"><img src="{% static "video/img/erase.png" %}"/></a>
+            
+            <div id="vid_time">
+                <span id="curtimetext"></span>/<span id="durtimetext"></span>
+            </div>      
+            <div id="progress">  
+                <div id="tag_tabs_back">
+                    <div id="tag_tabs">
+                        <div class="progressBar">
+                        <div class="timeBar"></div>
+                        <div class="bufferBar"></div>
+                    </div>
+                     {% if tags|length > 0 %}
+                    {% for tag in tags %}
+                    <div id=
+                        <div id="tag_button_{{ tag.id }}" class="newtag user_{{ tag.user.id }} group_{{ tag.group_tags.id }}" style="left:{{ tag.tag_start }}%;" onclick = "javascript:playFromLoaded({{ tag.tag_start }})">
+                                <span class="user_{{ tag.user.id }}">{{ tag.tag_title }}</span>
+                            
+                                
+                        </div>
+                        <div class="hidden_user_class" style="display:none">user_{{ tag.user.id }}</div>
+                        {% endfor %}
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>     
+            <!--<input id="seekslider" type="range" min="0" max="100" value="0" step="1" style="width:100%">-->
+
+                
+                
+               <!-- <button id="createtab">TAG IT</button> -->
+        </div>   
+
+    </div>    
+
+    <div id="tags_on_load">
+        {% if tags|length > 0 %}
+        {% for tag in tags %}
+        
+        
+        <div id="tag_{{ tag.id }}" class="page_tags block_item newtag user_{{ tag.user.id }} group_{{ tag.group_tags.id }}">
+               
+                {% if tag.tag_moderation == 1 %}
+                <h5>This tag is not yet moderated so only you can see it</h5>
+                {% endif %}
+                {% if tag.tag_moderation == 3 %}
+                <h5>This tag is was declined by the group moderator</h5>
+                {% endif %}
+
+
+                {% if video.youtube_id %}
+                <a href ="{% url 'video:tag-page' tag.group_tags.id tag.id %}">
+                    <img src="http://img.youtube.com/vi/{{ video.youtube_id }}/0.jpg">
+                </a>
+                {% else %}
+                <a href ="{% url 'video:tag-page' tag.group_tags.id tag.id %}">
+                    {% thumbnail tag.tag_image "300x200" crop="center" as im %}
+                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    {% endthumbnail %}
+                </a>
+                {% endif %}
+
+
+
+
+                               
+                <div class="tag-time">{{ tag.tag_start_string }}</div>
+                <div class="tag_avatar">
+                    {% thumbnail tag.user.userprofile.avatar "50x50" crop="center" as im %}
+                    <img class="user_avatar" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    {% endthumbnail %}
+                </div>
+                
+                {% for slide in tag.tag_slide.all %}
+                <div class="tag_slide">
+                    {% thumbnail slide.slide_image "400x400" crop="center" as im %}
+                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    {% endthumbnail %}  
+                </div>  
+             
+                
+
+                {% endfor %} 
+                <!--<div class="tag_username">{#{{ tag.user.username }}#}</div>-->
+
+                <h5><div class="tag_title"><a href ="{% url 'video:tag-page' tag.group_tags.id tag.id %}">{{ tag.tag_title }}</a></div></h5>
+                <div class="tag_start">{{ tag.tag_start }}</div> 
+                <div class="tag_secs">{{ tag.time_secs }}</div> 
+                <div class="tag_overlay">{{ tag.tag_draw }}</div>
+                <div class="tag_username">{{ tag.user.username }}</div>
+            
+        </div> 
+
+            {% endfor %}
+            {% endif %}
+
+        
+    </div>      
+       
+    <div>
+        <canvas id="tag_canvas"></canvas>
+        <div id="taglist"></div>
+    </div>
+
+    
+</div>    
+
+
+<div id="right-column">
+    <h3>{{ video.video_title }}</h3>
+    <div class="row drop_row">
+
+        <a href="#" id="group_drop" class="info_drop" data-dropdown="drop_group"><img class="drop_icon" src="{% static "video/img/drop-icon.png" %}"/>Group:</a>
+
+
+
+                    {% if groups|length > 0 %}
+                        <ul id="drop_group" class="small f-dropdown group_drop" data-dropdown-content>
+                            <li><a href="{% url 'video:create-group-video' video.id %}">Create a new group with this video</a></li>
+                            <li><label>Groups you are a member of</label>    </li>
+             
+                                    {% for group in groups_manager %}
+                                    <div class="groups_manager_id">{{ group.id }}</div>
+                                    <div style="display:none" class="group_tagger_status_{{ group.id }}">{{ group.group_taggers }}</div>
+                                    <div style="display:none" class="group_drawing_status_{{ group.id }}">{{ group.group_drawing }}</div>
+                                    <li class="has-dropdown group_show_list manager">
+                                        <a onclick = "javascript:showSpecificToGroup('{{ group.group_title|escapejs|truncatechars:22  }}', '{{ group.id }}')"  class="group_member">{{ group.group_title|truncatechars:32 }}</a>
+                     
+
+                                        <ul id="drop_member" class="small f-dropdown member_drop drop_{{ group.id }}" data-dropdown-content>
+                                        {% for member in group.group_member.all %}
+                                            <li value="user_{{ member.id }}" class="user_list group_{{ group.id }}" ><a onclick = "javascript:showSpecificToUser({{ member.id }}, '{{ member.username|escapejs }}', '{{ group.id }}', '{{ group.group_title|escapejs|truncatechars:22  }}')" href="#" class="user_{{ member.id }}">{{ member.username }} </a>
+                                            </li>    
+                                        {% endfor %} 
+                                        </ul>    
+
+                                    </li>
+                                     <li class="group_link_list">
+                                        <a href="{% url 'video:social-group' group.id %}">View Group</a>
+                                    </li>
+
+                                    {% endfor %}
+
+                                    {% for group in groups_accepted %}
+                                    <div class="groups_accepted_id">{{ group.id }}</div>
+                                    <div style="display:none" class="group_tagger_status_{{ group.id }}">{{ group.group_taggers }}</div>
+                                    <div style="display:none" class="group_drawing_status_{{ group.id }}">{{ group.group_drawing }}</div>
+                                    <li class="has-dropdown group_show_list accepted">
+                                        <a onclick = "javascript:showSpecificToGroup('{{ group.group_title|escapejs|truncatechars:22  }}', '{{ group.id }}')"  class="group_member">{{ group.group_title|truncatechars:32 }}</a>
+
+                                        <ul id="drop_member" class="small f-dropdown member_drop drop_{{ group.id }}" data-dropdown-content>
+                                        {% for member in group.group_member.all %}
+                                            <li value="user_{{ member.id }}" class="user_list group_{{ group.id }}" ><a onclick = "javascript:showSpecificToUser({{ member.id }}, '{{ member.username|escapejs }}', '{{ group.id }}', '{{ group.group_title|escapejs|truncatechars:22  }}')" href="#" class="user_{{ member.id }}">{{ member.username }} </a>
+                                            </li>    
+                                        {% endfor %} 
+                                        </ul>    
+
+                                    </li>
+                                     <li class="group_link_list">
+                                        <a href="{% url 'video:social-group' group.id %}">View Group</a>
+                                    </li>
+
+                                    {% endfor %}
+
+                                  
+                            
+                            <li>  
+                                <label>Not yet a member of</label>
+                            </li>  
+                                    {% for group in not_groups_member_open %}
+                                    
+                                    <div style="display:none" class="group_tagger_status_{{ group.id }}">{{ group.group_taggers }}</div>
+                                    <div style="display:none" class="group_drawing_status_{{ group.id }}">{{ group.group_drawing }}</div>
+                                    <li class="has-dropdown group_show_list accepted not_group_member">
+                                        <a onclick = "javascript:showSpecificToGroup('{{ group.group_title|escapejs|truncatechars:22  }}', '{{ group.id }}')"  class="group_member">{{ group.group_title|truncatechars:32 }}</a>
+
+                                        <ul id="drop_member" class="small f-dropdown member_drop drop_{{ group.id }}" data-dropdown-content>
+                                        {% for member in group.group_member.all %}
+                                            <li value="user_{{ member.id }}" class="user_list group_{{ group.id }}" ><a onclick = "javascript:showSpecificToUser({{ member.id }}, '{{ member.username|escapejs }}', '{{ group.id }}', '{{ group.group_title|escapejs|truncatechars:22  }}')" href="#" class="user_{{ member.id }}">{{ member.username }} </a>
+                                            </li>    
+                                        {% endfor %} 
+                                        </ul>    
+
+                                    </li>
+                                     <li class="group_link_list">
+                                        <a href="{% url 'video:social-group' group.id %}">View Group</a>
+                                    </li>
+          
+                                    {% endfor %}
+
+                            <li>  
+                                <label>Private Groups</label>
+                            </li>  
+                                    {% for group in not_groups_member_private %}
+                                    
+                                    <div style="display:none" class="group_tagger_status_{{ group.id }}">{{ group.group_taggers }}</div>
+                                    <div style="display:none" class="group_drawing_status_{{ group.id }}">{{ group.group_drawing }}</div>
+                                    <li class="has-dropdown group_show_list accepted">
+                                        <a onclick = "javascript:showSpecificToGroup('{{ group.group_title|escapejs|truncatechars:22  }}', '{{ group.id }}')"  class="group_member">{{ group.group_title|truncatechars:32 }}</a>
+
+                                        <ul class="dropdown member_drop">
+                                        {% for member in group.group_member.all %}
+                                            <li value="user_{{ member.id }}" class="user_list group_{{ group.id }}" ><a onclick = "javascript:showSpecificToUser({{ member.id }}, '{{ member.username|escapejs }}', '{{ group.id }}', '{{ group.group_title|escapejs|truncatechars:22  }}')" href="#" class="user_{{ member.id }}">{{ member.username }} </a>
+                                            </li>    
+                                        {% endfor %} 
+                                        </ul>    
+
+                                    </li>
+                                     <li class="group_link_list">
+                                        <a href="{% url 'video:social-group' group.id %}">View Group</a>
+                                    </li>
+          
+                                    {% endfor %}                            
+                                  
+                                  
+                        </ul>
+                    
+                  
+                {% else %}
+                    <ul id="drop1" class="dropdown" data-options="align:left">
+                            <li><label>Not in any groups yet</label>    
+                                </li>
+                        </ul>
+                {% endif %} 
+
+
+        <div style="display:none" id="current_group_id">{{ group.id }}</div>
+        <div style="display:none" id="current_taggers_status">{{ group.group_taggers }}</div>
+        <input type="hidden" value="0" name="current_group_input">
+
+        <div class ="info_display" id="group_showing">{{ group.group_title|truncatechars:22 }}</div>
+    </div>
+    <div class="row drop_row">    
+        <a href="#" id="user_drop" class="info_drop"  data-dropdown="drop_member"><img class="drop_icon" src="{% static "video/img/drop-icon.png" %}"/>User:</a>
+
+        <div class ="info_display" id="user_showing">All</div>
+    </div>
+    
+
+    <div id="slide_outer">
+        <div id="display_slide">
+            
+        </div>
+        <div id="slide_zoom">
+            <img src="{% static "video/img/zoom-out.png" %}"/>
+        </div>
+    </div>    
+    
+    <div id="current_tag_outer">
+        <div id="current_tag">hello</div>
+        <div id="current_tag_avatar"></div>
+        <div id="current_tag_user"></div>
+    </div>
+
+    {% if user.is_authenticated %} 
+    <div id="tag_create_form" class="member_status_form">
+        <div id="post_tag">
+            {% csrf_token %}
+
+            <input type="text" name="tag_title" id="tag_title" placeholder="Type your tag">
+            <div class="row drop_row">
+                
+                <div id="slides_dropdown" class="">
+                     <a href="#" data-dropdown="drop2" aria-controls="drop2" aria-expanded="false" class="dropdown">
+                        <div id="selected_slide" class=""><img src="{% static "video/img/slide-icon.png" %}"></div>
+                    </a>
+                
+                    <ul id="drop2" data-dropdown-content class="f-dropdown" aria-hidden="true">
+                        <h5>Slides in this group</h5>
+                        {% for group in groups_member %}
+                        <li class="group_{{ group.id }} slide_group"><a href="{% url 'video:social-group-slides' group.id %}">Add slides to group</a></li>
+                        {% endfor %}
+
+                        {% for slide in slides_group %}
+                        <li class="group_{{ slide.slide_group.id }} slide_group" onclick = "javascript:slideToTag( {{ slide.id }} ); ">{{ slide.slide_name }}
+                            {% thumbnail slide.slide_image "47x47" crop="center" as im %}
+                            <img class="slide_preview slide_id_{{ slide.id }}" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                            {% endthumbnail %}
+                        
+                        </li>
+                      
+                        {% endfor %}
+                        <h5>All your slides</h5>
+                        {% for slide in slides_user %}
+                        <li class="" onclick = "javascript:slideToTag( {{ slide.id }} ); ">{{ slide.slide_name }}
+                            {% thumbnail slide.slide_image "47x47" crop="center" as im %}
+                            <img class="slide_preview slide_id_{{ slide.id }}" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                            {% endthumbnail %}
+                        {% endfor %}
+                        </li>
+                    </ul>
+                </div> 
+                <div id="tag_description_outer">
+                    <textarea id="tag_description" rows="2" placeholder="Optional tag description"></textarea>
+                </div>
+            </div>    
+           
+            <div class="small-3 large-12 columns tag_button">  
+                <button class="large" onclick = "javascript:makeTag();">Comment</button>
+                <!--<input id="tag_button" type="submit" name="submit" value="TAG IT">-->
+            </div>   
+                
+            <div id="results"></div> <!-- errors go here -->
+            <div id="hidden_slide_id" style="display:none">0</div>
+
+        </div>
+
+    </div>  
+
+      
+    
+        <div class="member_status_message">You need to join this group before you can add tags to it, <a href="{% url 'video:social-group' group.id %}/">click here</a></div>
+    {% else %}
+        <p>You need to login and be a member of the group before you can add tags to this group.<a href="{% url 'video:create' %}">click here to sign up</a></p>  
+    {% endif %}
+
+    
+            <!-- comments section -->
+        <div id="comments">
+            <h3>Video Discussion</h3>
+
+            <div id="comment_form">
+            {% csrf_token %}    
+
+                <input type="text" name="comment_entry" id="comment_entry" placeholder="Add your comment">
+                <!-- below - 0 because there is no parent comment / 2 because we on a video -->
+                <button class="tiny" onclick = "javascript:makeComment( 0, 2 );">Comment</button>
+                
+            </div>
+            {% for comment in comments %}
+            <div class="comment_group">
+                {% if comment.comment_tag %}
+                <h5><a href ="{% url 'video:tag-page' comment.comment_tag.group_tags.id comment.comment_tag.id %}">Comment on a tag</a></h5>
+                {% endif %}
+                <div class="comment_outer ">
+                    <button class="tiny right" onclick = "javascript:displayCommentReply( {{ comment.id }} );">Reply</button>
+                    <!--<div class="comment_{{ comment.id }}">{{ comment_id }}</div>-->
+                    <div class="comment_avatar">
+                        {% thumbnail comment.commenter.userprofile.avatar "50x50" crop="center" as im %}
+                        <img class="user_avatar" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                        {% endthumbnail %}
+
+                    </div>
+                    <h4>{{ comment.message }}</h4>
+                    <h6>{{ comment.commenter.username }}, {{ comment.added }}</h6>
+                    
+                    <div id="comment_replies_{{ comment.id }}"></div>
+                </div>
+                <div  style="display:none" id="comment_form_{{ comment.id }}">
+                {% csrf_token %}    
+                    <input type="text" name="comment_entry" id="comment_entry_{{ comment.id }}" placeholder="Add your reply">
+                    <!-- below - id because there is a parent comment / 4 because we on a tag -->
+                    <button class="tiny" onclick = "javascript:makeComment( {{ comment.id }}, 4 );">Reply</button>     
+                </div>
+                {% for reply in comment.parent_comments.all %}
+                <div class="comment_outer comment_reply comment_reply_{{ comment.id }}">
+               <!--     <div class="comment_{{ comment.id }}">{{ comment.id }}</div>-->
+                    <div class="comment_avatar">
+                        {% thumbnail reply.commenter.userprofile.avatar "40x40" crop="center" as im %}
+                        <img class="user_avatar" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                        {% endthumbnail %}
+
+                    </div>
+                    <h5>{{ reply.message }}</h5>
+                    <h6>{{ reply.commenter.username }}, {{ reply.added }}</h6>
+                    <!--<button onclick = "javascript:displayCommentReply( {{ comment.id }} );">Reply</button>
+                    <div id="comment_replies_{{ comment.id }}"></div>-->
+                </div>
+                {% endfor %}
+            </div>    
+
+
+            {% endfor %}
+            
+        </div>
+    <!-- end comments section -->
+
+
+</div>     
+
+
+
+
+
+
+{% endif %}
+
+
+
+{% endblock %}
+
+
+
+
+
+
+
