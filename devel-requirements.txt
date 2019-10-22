@@ -4,7 +4,7 @@ django-haystack==2.4.1
 easy-thumbnails==2.2
 elasticsearch==2.1.0
 oauthlib==1.0.3
-Pillow==2.9.0
+Pillow==6.2.0
 psycopg2==2.6.1
 PyJWT==1.4.0
 python-social-auth==0.2.14
