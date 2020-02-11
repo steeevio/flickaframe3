@@ -1,5 +1,5 @@
 defusedxml==0.4.1
-Django==1.8.2
+Django==1.11.28
 django-haystack==2.4.1
 easy-thumbnails==2.2
 elasticsearch==2.1.0
