@@ -12,4 +12,4 @@ python3-openid==3.0.9
 requests==2.9.1
 requests-oauthlib==0.6.0
 six==1.10.0
-urllib3==1.12
+urllib3==1.26.5
